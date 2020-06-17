@@ -77,3 +77,4 @@ void interfazDeJuego(){
 		system("cls");
 	}//Fin del for
 }//Fin de la función
+
