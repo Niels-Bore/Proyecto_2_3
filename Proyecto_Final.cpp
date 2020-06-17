@@ -4,7 +4,15 @@
 
 using namespace std;
 
-int menuDeSeleccion();//Funcion que despliega el menú a base de un switch para la selección de opciones que ofrece el programa
+struct EST_jugadores{//Estructura en que se almacenan los datos de un jugador
+	char nombre[80];
+	int puntaje;
+	int tiempoDeJuego;
+};
+
+int menuDeSeleccion();//Función que despliega el menú a base de un switch para la selección de opciones que ofrece el programa
+void interfazDeJuego();//Función que despliega la interfaz con la que el jugador ha de interactuar
+void manejoDeTableros();//
 
 int main(){
 	int continuar;
@@ -31,6 +39,7 @@ int menuDeSeleccion(){
 		case 1:
 			system("pause");
 			system("cls");
+			interfazDeJuego();
 			break;
 		case 2:
 			system("pause");
@@ -56,4 +65,15 @@ int menuDeSeleccion(){
 			break;					
 	}//Fin del switch
 	return opcion;
+}//Fin de la función
+
+void interfazDeJuego(){
+	EST_jugadores jugador[2];
+	for(int i=0;i<2;i++){
+		printf("\tInformaci%cn Jugador %d\n\n", 162, i+1);
+		printf("\nDeme su nombre de usuario: \n");
+		cin>>jugador[i].nombre;
+		system("pause");
+		system("cls");
+	}//Fin del for
 }//Fin de la función
