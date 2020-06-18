@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -14,6 +15,7 @@ int menuDeSeleccion();//Función que despliega el menú a base de un switch para l
 void interfazDeJuego();//Función que despliega la interfaz con la que el jugador ha de interactuar
 char **inicializacionDeTableros(char **tableroJugador);//Función que crea una martriz con tableros para que estos sean llenados por el usuario con los botes correspondientes
 char **llenadoTablero(char **tablero);//Función que permite la introducción de los barcos de cada jugador al tablero
+void desplegarAyuda();//Funcion que se encarga de desplegar un instructivo para el manejo del programa
 
 int main(){
 	int continuar;
@@ -53,6 +55,9 @@ int menuDeSeleccion(){
 			system("cls");
 			break;
 		case 4:
+			system("pause");
+			system("cls");
+			desplegarAyuda();
 			system("pause");
 			system("cls");
 			break;
@@ -620,4 +625,18 @@ char **llenadoTablero(char**tablero){
 	}//Fin del while				
 	return tablero;//se retorna el tablero con los nuevos valores
 }//Fin de la función
-
+void desplegarAyuda(){
+	fstream instructivo;//Se crea un archivo de la clase fsream
+	instructivo.open("Ayuda.txt", ios::in);
+	if (!instructivo) { //Se verifica si el archivo se puede abrir
+		cout << " No se pudo abrir el archivo " << endl ;
+		cin.get();
+	}//fin del if
+	char c;
+	instructivo.get(c);
+	while(!instructivo.eof()){//Se imprime el archivo a base de capturar los caracteres individuales
+		cout<<c;	
+		instructivo.get(c);
+	}//Fin del while
+	instructivo.close();
+}

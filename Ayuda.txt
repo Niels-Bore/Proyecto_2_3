@@ -1,0 +1,25 @@
+Hola usuario!
+Nuestro programa te ofrece 5 opciones:
+	La primera opcion te permite iniciar una partida nueva con otro jugador.
+		Una vez dentro, deberás darnos tu nombre y proceder a llenar el tablero con barcos.
+		Para ello requeridas de darnos la coordenada alfabetica (la correspondiente a la 
+		parte de arriba del tablero) y la numerica (la que se situa de lado izquierdo al 
+		tablero).
+		Una vez dada la coordenada, tus barcos se situaran ya sea enfrente o delante de la 
+		coordenada dada (Esto segun tu proximidad a los bordes).
+		Nota: 
+		Evita repetir coordenadas o posicionar barcos en posiciones ocupadas.
+		Evita usar coordenadas que escapen del tablero.
+		Te haremos repetir el proceso hasta que des los datos correctos
+		Una vez llenado el tablero por ambos jugadores, se desplegaran dos tableros por jugador
+		uno en que se mostraran tus barcos, y otro en que podras ver los ataques que le has causado 
+		causado al otro jugador.
+		Para atacar al jugador, solo debes de dar la coordenada que corresponda al punto que deseas 
+		atacar en el tablero del otro jugador.
+		Ganara aquel que haya derribado los ocho barcos del jugador contricante.
+		Al final de cada turno podras guardar tu progreso.
+	La segunda opcion te permite jugar una partida guardada.
+	La tercera opcion te permite ver el record de los jugadores que han degustado de este juego.
+	La cuarta opcion despliega el siguiente instructivo.
+	La quinta opcion cierra el programa.
+Para mayor informacion consultar al programador.
