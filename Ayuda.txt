@@ -1,7 +1,9 @@
 Hola usuario!
 Nuestro programa te ofrece 5 opciones:
 	La primera opcion te permite iniciar una partida nueva con otro jugador.
-		Una vez dentro, deberás darnos tu nombre y proceder a llenar el tablero con barcos.
+		Una vez dentro, deberás darnos tu nombre y proceder a llenar el tablero con barcos
+		(cada judador debe de dejar el ordenador a su contrincante para no ver su tablero, 
+		sera mas divertido!).
 		Para ello requeridas de darnos la coordenada alfabetica (la correspondiente a la 
 		parte de arriba del tablero) y la numerica (la que se situa de lado izquierdo al 
 		tablero).
@@ -13,7 +15,7 @@ Nuestro programa te ofrece 5 opciones:
 		Te haremos repetir el proceso hasta que des los datos correctos
 		Una vez llenado el tablero por ambos jugadores, se desplegaran dos tableros por jugador
 		uno en que se mostraran tus barcos, y otro en que podras ver los ataques que le has causado 
-		causado al otro jugador.
+		al otro jugador.
 		Para atacar al jugador, solo debes de dar la coordenada que corresponda al punto que deseas 
 		atacar en el tablero del otro jugador.
 		Ganara aquel que haya derribado los ocho barcos del jugador contricante.
