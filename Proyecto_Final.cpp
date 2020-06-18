@@ -13,6 +13,7 @@ struct EST_jugadores{//Estructura en que se almacenan los datos de un jugador
 int menuDeSeleccion();//Función que despliega el menú a base de un switch para la selección de opciones que ofrece el programa
 void interfazDeJuego();//Función que despliega la interfaz con la que el jugador ha de interactuar
 char **inicializacionDeTableros(char **tableroJugador);//Función que crea una martriz con tableros para que estos sean llenados por el usuario con los botes correspondientes
+char **llenadoTablero(char **tablero);//Función que permite la introducción de los barcos de cada jugador al tablero
 
 int main(){
 	int continuar;
@@ -20,7 +21,7 @@ int main(){
 	system("pause");
 	system("cls");
 	do{
-		continuar=menuDeSeleccion();	
+		continuar=menuDeSeleccion();//Menu se despliega a menos que se retorne el valor 5, que corresponde a la opción de salida
 	} while(continuar!=5);//Fin del do while
 	return 0;
 }//Fin de la función
@@ -34,12 +35,12 @@ int menuDeSeleccion(){
 	printf("\t\n4.-Ayuda");
 	printf("\t\n5.-Salir");
 	printf("\t\nEscoja una opci%cn:\n\n", 162);
-	cin>>opcion;
+	cin>>opcion;//Se lee el dato que brinde el usuario para posteriormente desplegar el resultado correspondiente
 	switch(opcion){
 		case 1:
 			system("pause");
 			system("cls");
-			interfazDeJuego();
+			interfazDeJuego();//se da inicio al juego
 			system("pause");
 			system("cls");
 			break;
@@ -60,13 +61,13 @@ int menuDeSeleccion(){
 			system("pause");
 			system("cls");
 			break;
-		default:
+		default://En caso de introducir un dato no valido se vuelve a solicitar al usuario el dato
 			printf("\nEsa no es una opci%cn\n", 162);
 			system("pause");
 			system("cls");
 			break;					
 	}//Fin del switch
-	return opcion;
+	return opcion;//Se retorna la opción para que de haber seleccionado 5 concluya el programa
 }//Fin de la función
 
 void interfazDeJuego(){
@@ -103,6 +104,9 @@ void interfazDeJuego(){
 					}//Fin del for
 					printf("\n");
 				}//fin del for
+				if(!inicializador1){//En caso de que el inicializador no se haya activado, el jugador deberá de llenar su tablero con sus respectivos barcos
+					tableroJugador1=llenadoTablero(tableroJugador1);
+				}//Fin del if
 				inicializador1=true;//Se activa hasta que ambos hayan terminado de acomodar su barco
 				system("pause");
 				system("cls");
@@ -138,6 +142,9 @@ void interfazDeJuego(){
 					}//Fin del for
 					printf("\n");
 				}//fin del for
+				if(!inicializador2){//En caso de que el inicializador no se haya activado, el jugador deberá de llenar su tablero con sus respectivos barcos
+					tableroJugador2=llenadoTablero(tableroJugador2);
+				}//Fin del if
 				inicializador2=true;//Se activa hasta que ambos hayan terminado de acomodar su barco
 				system("pause");
 				system("cls");
@@ -160,7 +167,7 @@ void interfazDeJuego(){
 				contadorTurno--;//Si termina el turno del jugador1, se decrementa el contador para que siga el jugador 1
 				break;	
 		}//Fin del switch
-	}while(jugador[0].puntaje!=8 || jugador[0].puntaje!=8);//Fin del do while
+	}while(jugador[0].puntaje!=25 || jugador[0].puntaje!=25);//Fin del do while
 }//Fin de la función
 
 char **inicializacionDeTableros(char **tableroJugador){
@@ -175,4 +182,113 @@ char **inicializacionDeTableros(char **tableroJugador){
 		}//Fin del for
 	}//fin del for
 	return tableroJugador;
+}//Fin de la función
+
+char **llenadoTablero(char**tablero){
+	char coordenadaX;
+	int disposicion, coordenadaY;
+	bool validacion, validacionCoordenada;
+	printf("\nAcomoda los barcos de 2 casillas '<>' donde quieras'");//Se le solicita al usuario que decida las coordenadas para cada tipo de barco
+	for(int i=0;i<3;i++){
+		validacion=false;
+		while(!validacion){//Mientras el usuario no ingresé una respuesta valida, se le seguirá solicitando el dato
+			printf("\nSelecciona la dispocisi%cn del barco %d:", 162, i+1);//Se le pregunta al usuario si desea acomodar su barco horizontal o verticalmente
+			printf("\n1.-Vertical");
+			printf("\n2.-Horizontal");
+			printf("\nSelecciona una opci%cn: \n", 162);
+			cin>>disposicion;
+			switch(disposicion){
+				case 1:
+					validacionCoordenada=false;//Se pone en false el validador para que se valide hasta que se de un resultado correcto
+					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
+						printf("Dime la coordena alfabetica del eje x donde se posiconar%c: ", 160);//Se le solicita al usuario una coordenada para posicionar su barco
+						cin>>coordenadaX;
+						if(coordenadaX>=97 && coordenadaX<117){
+							validacionCoordenada=true;//Se rompe el while, pues el valor dado es valido
+						}//Fin del if
+						else{
+							printf("\nDa una coordenada entre a y t\n");//Se le seguirán solicitando datos al usuario pues las coordenadas no son validas
+						}//Fin del else	
+					}//Fin del while
+					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
+					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
+						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
+						cin>>coordenadaY;
+						if(coordenadaY>=0 && coordenadaY<10){
+							validacionCoordenada=true;
+						}//Fin del if
+						else{
+							printf("\nDa una coordenada entre 0 y 9\n");//Se le seguirán solicitando datos al usuario pues las coordenadas no son validas
+						}//Fin del else
+					}//Fin del while
+					//Se posiciona el objeto en las coordenadas dadas
+					for(int i=0;i<10;i++){
+						for(int j=0;j<20;j++){
+							if(i==coordenadaY && j==coordenadaX-97 && tablero[i][j]==-79){
+								if(coordenadaY==9 && tablero[i-1][j]==-79){//Si la coordenada está en el borde inferior, se acomoda la continuación arriba
+									tablero[i][j]=94;
+									tablero[i-1][j]=94;	
+									validacion=true;//Se rompe el while, pues el valor dado es valido
+								}//Fin del if
+								else if(tablero[i+1][j]==-79){
+									tablero[i][j]=94;
+									tablero[i+1][j]=94;
+									validacion=true;//Se rompe el while, pues el valor dado es valido
+								}//Fin del else
+							}//Fin del if
+						}//Fin del for
+					}//Fin del for
+					break;
+				case 2:
+					validacionCoordenada=false;//Se pone en false el validador para que se valide hasta que se de un resultado correcto
+					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
+						printf("Dime la coordena alfabetica del eje x donde se posicionar%c: ", 160);//Se le solicita al usuario una coordenada para posicionar su barco
+						fflush(stdin);
+						cin>>coordenadaX;
+						if(coordenadaX>=97 && coordenadaX<117){
+							validacionCoordenada=true;//Se rompe el while, pues el valor dado es valido
+						}//Fin del if
+						else{
+							printf("\nDa una coordenada entre a y t\n");//Se le seguirán solicitando datos al usuario pues las coordenadas no son validas
+						}//Fin del else	
+					}//Fin del while
+					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
+					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
+						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
+						cin>>coordenadaY;
+						if(coordenadaY>=0 && coordenadaY<10){
+							validacionCoordenada=true;
+						}//Fin del if
+						else{
+							printf("\nDa una coordenada entre 0 y 9\n");//Se le seguirán solicitando datos al usuario pues las coordenadas no son validas
+						}//Fin del else
+					}//Fin del while
+					//Se posiciona el objeto en las coordenadas dadas
+					for(int i=0;i<10;i++){
+						for(int j=0;j<20;j++){
+							if(i==coordenadaY && j==coordenadaX-97 && tablero[i][j]==-79){
+								if(coordenadaX==116 && tablero[i][j-1]==-79){//Si la coordenada está en el borde inferior, se acomoda la continuación arriba
+									tablero[i][j]=62;
+									tablero[i][j-1]=60;	
+									validacion=true;//Se rompe el while, pues el valor dado es valido
+								}//Fin del if
+								else if(tablero[i][j+1]==-79){
+									tablero[i][j]=60;
+									tablero[i][j+1]=62;
+									validacion=true;//Se rompe el while, pues el valor dado es valido
+								}
+							}//Fin del if
+						}//Fin del for
+					}//Fin del for
+					break;
+				default:
+					printf("\nSelecciona una opcion valida\n");//Se le seguirán solicitando los datos al usuario hasta que sean correctos
+					break;		
+			}//Fin del switch	
+			if(!validacion){
+				printf("\nEn esas coordenadas ya hay parte de un barco\n");
+			}//Fin del if
+		}//Fin del while			
+	}//Fin del for
+	return tablero;//se retorna el tablero con los nuevos valores
 }//Fin de la función
