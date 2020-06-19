@@ -10,6 +10,7 @@ struct EST_jugadores{//Estructura en que se almacenan los datos de un jugador
 	char nombre[80];
 	int puntaje;
 	int tiempoDeJuego;
+	int id;
 };
 
 int menuDeSeleccion();//Función que despliega el menú a base de un switch para la selección de opciones que ofrece el programa
@@ -18,7 +19,7 @@ char **inicializacionDeTableros(char **tableroJugador);//Función que crea una ma
 char **llenadoTablero(char **tablero);//Función que permite la introducción de los barcos de cada jugador al tablero
 void desplegarAyuda();//Funcion que se encarga de desplegar un instructivo para el manejo del programa
 char **ataqueAlEnemigo(char **tableroDeAtaque, char **tableroEnemigo, EST_jugadores *puntaje, int numeroDeJugador, bool *atacado);//Función encargada de direccionar los ataques del jugador al contricante
-void mostrarTablero(char **tablero);
+void mostrarTablero(char **tablero);//Función encargada de desplegar el tablero
 
 int main(){
 	int continuar;
@@ -42,6 +43,7 @@ int menuDeSeleccion(){
 	printf("\t\n5.-Salir");
 	printf("\t\nEscoja una opci%cn:\n\n", 162);
 	fflush(stdin);
+	opcion=0;
 	scanf("%d", &opcion);//Se lee el dato que brinde el usuario para posteriormente desplegar el resultado correspondiente
 	switch(opcion){
 		case 1:
@@ -240,7 +242,7 @@ char **llenadoTablero(char**tablero){
 					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-						coordenadaY=0;
+						coordenadaY=-1;
 						fflush(stdin);
 						scanf("%d", &coordenadaY);
 						if(coordenadaY>=0 && coordenadaY<=9){
@@ -287,7 +289,7 @@ char **llenadoTablero(char**tablero){
 					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-						coordenadaY=0;
+						coordenadaY=-1;
 						fflush(stdin);
 						scanf("%d", &coordenadaY);
 						if(coordenadaY>=0 && coordenadaY<=9){
@@ -354,7 +356,7 @@ char **llenadoTablero(char**tablero){
 					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-						coordenadaY=0;
+						coordenadaY=-1;
 						fflush(stdin);
 						scanf("%d", &coordenadaY);
 						if(coordenadaY>=0 && coordenadaY<=9){
@@ -403,7 +405,7 @@ char **llenadoTablero(char**tablero){
 					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-						coordenadaY=0;
+						coordenadaY=-1;
 						fflush(stdin);
 						scanf("%d", &coordenadaY);
 						if(coordenadaY>=0 && coordenadaY<=9){
@@ -472,7 +474,7 @@ char **llenadoTablero(char**tablero){
 					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-						coordenadaY=0;
+						coordenadaY=-1;
 						fflush(stdin);
 						scanf("%d", &coordenadaY);
 						if(coordenadaY>=0 && coordenadaY<=9){
@@ -523,7 +525,7 @@ char **llenadoTablero(char**tablero){
 					validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 					while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 						printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-						coordenadaY=0;
+						coordenadaY=-1;
 						fflush(stdin);
 						scanf("%d", &coordenadaY);
 						if(coordenadaY>=0 && coordenadaY<=9){
@@ -593,7 +595,7 @@ char **llenadoTablero(char**tablero){
 				validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 				while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 					printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-					coordenadaY=0;
+					coordenadaY=-1;
 					fflush(stdin);
 					scanf("%d", &coordenadaY);
 					if(coordenadaY>=0 && coordenadaY<=9){
@@ -646,7 +648,7 @@ char **llenadoTablero(char**tablero){
 				validacionCoordenada=false;//Se vuelve a negar para la validación de la siguiente variable
 				while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 					printf("Dime la coordena num%crica del eje y donde se posiconar%c: ", 130, 160);//Se le solicita al usuario una coordenada en el eje y para posicionar su barco
-					coordenadaY=0;
+					coordenadaY=-1;
 					fflush(stdin);
 					scanf("%d", &coordenadaY);
 					if(coordenadaY>=0 && coordenadaY<=9){
