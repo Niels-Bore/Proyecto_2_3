@@ -23,7 +23,17 @@ void mostrarTablero(char **tablero);//Función encargada de desplegar el tablero
 
 int main(){
 	int continuar;
-	printf("\t\t\tBienvenido a Batalla Naval\n\n");
+	printf("\t\t\t\t   Bienvenido a Batalla Naval\n\n\n");
+	printf("\t\t\t\t               ||\\             \n");
+	printf("\t\t\t\t               || \\            \n");
+	printf("\t\t\t\t               || /            \n");
+	printf("\t\t\t\t               ||/             \n");
+	printf("\t\t\t\t               ||             \n");
+	printf("\t\t\t\t_______________||________________\n");
+	printf("\t\t\t\t\\                               /\n");
+	printf("\t\t\t\t \\_____O_____O_____O_____O_____/\n");
+	printf("\t\t\t\t  \\___________________________/\n");
+	printf("\t\t\t\t   \\_________________________/\n\n\n");
 	system("pause");
 	system("cls");
 	do{
