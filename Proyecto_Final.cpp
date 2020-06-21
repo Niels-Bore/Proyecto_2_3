@@ -97,9 +97,10 @@ int menuDeSeleccion(){
 }//Fin de la función
 
 void interfazDeJuego(bool guardado){
-	char **tableroJugador1, **tableroJugador2, **tableroDeAtaqueJugador1, **tableroDeAtaqueJugador2;
+	char **tableroJugador1, **tableroJugador2, **tableroDeAtaqueJugador1, **tableroDeAtaqueJugador2, respuesta;
 	int contadorTurno;
-	bool inicializador1, inicializador2, atacado;
+	bool inicializador1, inicializador2, atacado, final;
+	final=false;//la partida se mantendrá activa a menos que el jugador gane el juego o indique lo contrario
 	EST_jugadores jugador[2];//Se crea una estructura de tipo EST_jugadores para guardar los datos de cada jugador
 	if(!guardado){//Si se inicia una partida sin datos guardados, se restablecen los valores iniciales
 		contadorTurno=1;//Se establece el contador de turno en 1 para que el turno sea del jugador 1
@@ -152,6 +153,19 @@ void interfazDeJuego(bool guardado){
 					system("pause");
 					system("cls");
 					mostrarTablero(tableroDeAtaqueJugador1);//Se despliega el tablero con los ataques efectuados
+					system("pause");
+					system("cls");
+					printf("%cDeseas guardar partida y salir? (S para salir y guardar, cualquier otro caracter para continuar)\n\n", 168);
+					fflush(stdin);
+					scanf("%c", &respuesta);
+					if(respuesta=='S'){
+						guardado=true;
+						final=true;
+						//meter aquí función para guardar los valores
+						break;
+					}
+					system("pause");
+					system("cls");
 					printf("\n\nAhora deja el computador a tu contrincante\n\n");
 					system("pause");
 					system("cls");
@@ -177,10 +191,21 @@ void interfazDeJuego(bool guardado){
 					printf("Puntos jugador 2: %d\n\n", jugador[1].puntaje);
 					printf("Selecciona la coordenada para atacar jugador 2:\n");
 					mostrarTablero(tableroDeAtaqueJugador2);
-					tableroDeAtaqueJugador1=ataqueAlEnemigo(tableroDeAtaqueJugador2, tableroJugador1, jugador, 2, &atacado);//Se despliega la funcion en que se introducen las coordenadas de ataque al enemigo
+					tableroDeAtaqueJugador2=ataqueAlEnemigo(tableroDeAtaqueJugador2, tableroJugador1, jugador, 2, &atacado);//Se despliega la funcion en que se introducen las coordenadas de ataque al enemigo
 					system("pause");
 					system("cls");
 					mostrarTablero(tableroDeAtaqueJugador2);//Se despliega el tablero con los ataques efectuados
+					system("pause");
+					system("cls");
+					printf("%cDeseas guardar partida y salir? (S para salir y guardar, cualquier otro caracter para continuar)\n\n", 168);
+					fflush(stdin);
+					scanf("%c", &respuesta);
+					if(respuesta=='S'){
+						guardado=true;
+						final=true;
+						//meter aquí función para guardar los valores
+						break;
+					}
 					system("pause");
 					system("cls");
 					printf("Ahora deja el computador a tu contrincante\n\n");
@@ -191,7 +216,7 @@ void interfazDeJuego(bool guardado){
 				contadorTurno--;//Si termina el turno del jugador1, se decrementa el contador para que siga el jugador 1
 				break;	
 		}//Fin del switch
-	}while(jugador[0].puntaje!=25 && jugador[1].puntaje!=25);//Fin del do while
+	}while(jugador[0].puntaje!=25 && jugador[1].puntaje!=25 && !final);//Fin del do while
 }//Fin de la función
 void mostrarTablero(char**tablero){
 	printf("\n  ");
@@ -718,7 +743,8 @@ char **ataqueAlEnemigo(char **tableroDeAtaque, char **tableroEnemigo, EST_jugado
 		validacionCoordenada=false;
 		while(!validacionCoordenada){//Mientras el usuario no ingrese un valor valido, seguirá solicitándolo
 			printf("Dime la coordena alfabetica del eje x donde atacar%c: ", 160);//Se le solicita al usuario una coordenada para posicionar su barco
-			cin>>coordenadaX;
+			fflush(stdin);
+			scanf("%c", &coordenadaX);
 			if(coordenadaX>=97 && coordenadaX<117){
 				validacionCoordenada=true;//Se rompe el while, pues el valor dado es valido
 			}//Fin del if
