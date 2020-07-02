@@ -28,7 +28,9 @@ Nuestro programa te ofrece 5 opciones:
 
 		Al final de cada turno podras guardar tu progreso.
 	
-	La segunda opcion te permite jugar la ultima partida guardada
+	La segunda opcion te permite jugar la ultima partida guardada. Se iniciara con el siguiente turno
+	activo, por lo que si guardaste en tu turno, debes dejar que quien abra la partida sea el siguiente
+	jugador.
 	
 	La tercera opcion te permite ver el record de los jugadores que han degustado de este juego contra el tuyo.
 	

@@ -332,7 +332,10 @@ void interfazDeJuego(bool guardado){
 		printf("Felicidades Jugador 1, ha ganado\n");
 		
 		tiempoFinal=clock();//se detiene el conteo del tiempo
+		//se calcula el tiempo total que ha pasado
 		tiempoTotal=contabilizarTiempo(tiempoInicial,tiempoFinal, tiempoAcomulado);
+		
+		//se mandan los datos de ambos jugadores para guardarse
 		registroRecords(jugador[0].nombre, jugador[0].puntaje, tiempoTotal);
 		registroRecords(jugador[1].nombre, jugador[1].puntaje, tiempoTotal);
 		ordenarRecords();
@@ -341,7 +344,10 @@ void interfazDeJuego(bool guardado){
 		printf("Felicidades Jugador 2, ha ganado\n");
 		
 		tiempoFinal=clock();//se detiene el conteo del tiempo
+		//se calcula el tiempo total que ha pasado
 		tiempoTotal=contabilizarTiempo(tiempoInicial,tiempoFinal, tiempoAcomulado);
+		
+		//se mandan los datos de ambos jugadores para guardarse
 		registroRecords(jugador[0].nombre, jugador[0].puntaje, tiempoTotal);
 		registroRecords(jugador[1].nombre, jugador[1].puntaje, tiempoTotal);
 		ordenarRecords();
@@ -939,36 +945,32 @@ void lecturaGuardado(EST_archivoDeGuardado registro){
 	if(!archivo){//se verifica que el archivo exista
 		cout<<endl<<"Error de apertura"<<endl;
 		exit(0);
-	}
+	}//fin del if
 	
-	archivo.seekg((0)*sizeof(EST_archivoDeGuardado),ios::beg);
-	archivo.write(reinterpret_cast<char*>(&registro), sizeof(EST_archivoDeGuardado));
+	archivo.seekg((0)*sizeof(EST_archivoDeGuardado),ios::beg);//se posiciona el archivo en la pocision 0, para evitar errores
+	archivo.write(reinterpret_cast<char*>(&registro), sizeof(EST_archivoDeGuardado));//se escriben los datos
 	
-	archivo.close();
+	archivo.close();//se cierra el archivo
 }//Fin de la función
 
 EST_archivoDeGuardado cambiarGuardado(EST_archivoDeGuardado registro){
 	EST_archivoDeGuardado archivoGuardado;
 	fstream archivo;
-	archivo.open("partidaGuardada.dat",ios::binary|ios::in);
-	if(!archivo){
-		cout<<endl<<"Error de apertura"<<endl;
+	archivo.open("partidaGuardada.dat",ios::binary|ios::in);//se abre el archivo en modo de lectura
+	if(!archivo){//se comprueba que el archivo exista
+		cout<<endl<<"Error, no existe una partida guardada"<<endl;
 		exit(0);
 	}//Fin del if
 	
-	/*while(!archivo.eof() && archivo.read(reinterpret_cast<char*>(&archivoGuardado), sizeof(EST_archivoDeGuardado))){
-		registro=archivoGuardado;
-	}//Fin del while*/
+	archivo.seekp((0)*sizeof(EST_archivoDeGuardado),ios::beg);//se posiciona el archivo en la pocision 0, para evitar errores
+	archivo.read(reinterpret_cast<char*>(&registro), sizeof(EST_archivoDeGuardado));//se leen los datos guardados
+	archivo.close();//se cierrra el archivo
 	
-	archivo.seekp((0)*sizeof(EST_archivoDeGuardado),ios::beg);
-	archivo.read(reinterpret_cast<char*>(&registro), sizeof(EST_archivoDeGuardado));
-	archivo.close();
-	
-	return registro;
+	return registro;//se retornan los datos leidos
 }//Fin de la función
 
 void imprimirRecords(){
-	ordenarRecords();
+	ordenarRecords();//se ordenan los records
 	
 	fstream archivo; 
 	archivo.open("records.txt",ios::in);
@@ -976,14 +978,17 @@ void imprimirRecords(){
 		cout << " No se pudo abrir el arcivo, puede que no haya records guardados " << endl;
 		exit(0); // termina el programa
 	}//Fin del if
+	
+	//se declaran las variables para el almacenamiento de datos
 	char nombre[80];
 	int puntuacion;
 	double tiempo;
 	archivo.clear(); // restablece el eof para la sig entrada
 	archivo.seekg( 0 ); // se mueve al inicio del archivo
-	archivo >> nombre >> puntuacion >> tiempo;
+	archivo >> nombre >> puntuacion >> tiempo;// mandamos el flujo de extraccion del archivo a las variables
 	while( !archivo.eof() ) // iterar hasta fin de archivo
 	{
+		//se imprimen las variables
 		cout << "nombre :" << nombre << "	puntuacion :" << puntuacion << "	tiempo :" << tiempo <<endl;
 		// mandamos el flujo de extraccion del archivo a las variables
 		archivo >> nombre >> puntuacion >> tiempo;
@@ -994,9 +999,9 @@ void imprimirRecords(){
 void registroRecords(char nombre[80], int record, int tiempo){
 	fstream archivo;
 	archivo.open("records.txt", ios::out|ios::app);
-	if (!archivo){
+	if (!archivo){//verifica la existencia del archivo
 		cerr << " No se pudo abrir el archivo " << endl ;
-		exit(0);
+		exit(0);//cierra el programa
 	}//Fin del if
     archivo << nombre << " " << record << " " << tiempo << endl;
 	archivo.close(); // cierra el archivo
@@ -1016,12 +1021,17 @@ void ordenarRecords(){
 	
 	while( !archivo.eof() ) // iterar hasta fin de archivo
 	{
+		//se leen las variables y se almacenan en un vector
 		archivo >> jugador[contador].nombre >> jugador[contador].puntuacion >> jugador[contador].tiempoSegundos;
+		//se suma uno al contador, para llevar un recuento de el numero de jugadores que hay
 		contador++;
 	}//Fin del while
+	//se resta uno al contador, para ajustar el numero de jugadores
 	contador--;
 	archivo.close();
 	
+	
+	//metodo burbuja para ordenar los jugadores
 	for (int i=0; i<contador;i++) {
         for (int j=0; j<contador-1; j++) {
             if (jugador[j].puntuacion < jugador[i+1].puntuacion) {
@@ -1040,14 +1050,18 @@ void ordenarRecords(){
         }//Fin del for
     }//Fin del for
     
+    //se borra el archivo 
     remove("records.txt");
     
+    //se reabre o se vuelve a abrir el archivo
     archivo.open("records.txt", ios::out|ios::app);
 	if (!archivo){
 		cerr << " No se pudo abrir el archivo " << endl ;
 		exit(0);
 	}//Fin del if
 	
+	
+	//se reingresan los datos ordenados
 	for(int i=0; i<contador; i++){
 		archivo << jugador[i].nombre << " " << jugador[i].puntuacion << " " << jugador[i].tiempoSegundos << endl;
 	}//Fin del for
@@ -1056,10 +1070,12 @@ void ordenarRecords(){
 
 double contabilizarTiempo(double tiempoInicial,double tiempoFinal,double tiempoAcomulado){
 	double tiempoTotal;
-	
+	//esta formula se usa para calcular los segundos que han pasado
 	tiempoTotal=(double(tiempoFinal-tiempoInicial)/CLOCKS_PER_SEC);
+	//se suma el tiempo acomulado al tiempo calculado
 	tiempoTotal+=tiempoAcomulado;
 	
+	//re retorna el tiempo total
 	return(tiempoTotal);
 }//Fin del for
 
