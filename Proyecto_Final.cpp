@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <time.h>
 
 using namespace std;
 
@@ -13,25 +14,49 @@ struct EST_jugadores{//Estructura en que se almacenan los datos de un jugador
 	int id;
 };
 
+struct EST_archivoDeGuardado{//Esctructura en que se almacenan los valores de la partida guardada
+	EST_jugadores jugador[2];
+	int contadorTurno;
+	char tableroJugador1[10][20];
+	char tableroJugador2[10][20];
+	char tableroDeAtaqueJugador1[10][20];
+	char tableroDeAtaqueJugador2[10][20];
+	bool inicializador1, inicializador2, atacado;
+	double tiempo;
+};
+
+struct EST_records{//Estructura en que se guardan los records de los jugadores que han usado el programa
+	char nombre[80];
+	int puntuacion;
+	double tiempoSegundos;
+};
+
 int menuDeSeleccion();//Función que despliega el menú a base de un switch para la selección de opciones que ofrece el programa
 void interfazDeJuego(bool guardado);//Función que despliega la interfaz con la que el jugador ha de interactuar
-char **inicializacionDeTableros(char **tableroJugador);//Función que crea una martriz con tableros para que estos sean llenados por el usuario con los botes correspondientes
-char **llenadoTablero(char **tablero);//Función que permite la introducción de los barcos de cada jugador al tablero
+void inicializacionDeTableros(char tableroJugador[10][20]);//Función que crea una martriz con tableros para que estos sean llenados por el usuario con los botes correspondientes
+void llenadoTablero(char tablero[10][20]);//Función que permite la introducción de los barcos de cada jugador al tablero
 void desplegarAyuda();//Funcion que se encarga de desplegar un instructivo para el manejo del programa
-char **ataqueAlEnemigo(char **tableroDeAtaque, char **tableroEnemigo, EST_jugadores *puntaje, int numeroDeJugador, bool *atacado);//Función encargada de direccionar los ataques del jugador al contricante
-void mostrarTablero(char **tablero);//Función encargada de desplegar el tablero
+void ataqueAlEnemigo(char tableroDeAtaque[10][20], char tableroEnemigo[10][20], EST_jugadores *puntaje, int numeroDeJugador, bool *atacado);//Función encargada de direccionar los ataques del jugador al contricante
+void mostrarTablero(char tablero[10][20]);//Función encargada de desplegar el tablero
+void lecturaGuardado(EST_archivoDeGuardado registro);//Funcion que guarda los datos 
+EST_archivoDeGuardado cambiarGuardado(EST_archivoDeGuardado registro);//Funcion que sobreescribe los datos
+void imprimirRecords();//muestra los records
+void registroRecords(char nombre[80], int record, int tiempo);//Guardar los records
+void ordenarRecords();//ondena los records de la lista
+double contabilizarTiempo(double tiempoInicial, double tiempoFinal, double tiempoAcomulado);//Funcion para transformar a segundos el tiempo
 
 int main(){
 	int continuar;
 	printf("\t\t\t\t   Bienvenido a Batalla Naval\n\n\n");
-	printf("\t\t\t\t               ||\\             \n");
-	printf("\t\t\t\t               || \\            \n");
-	printf("\t\t\t\t               || /            \n");
-	printf("\t\t\t\t               ||/             \n");
+	printf("\t\t\t\t                ________               \n");
+	printf("\t\t\t\t               ||       \\             \n");
+	printf("\t\t\t\t               ||        \\            \n");
+	printf("\t\t\t\t               ||        /           \n");
+	printf("\t\t\t\t               ||_______/            \n");
 	printf("\t\t\t\t               ||             \n");
 	printf("\t\t\t\t_______________||________________\n");
 	printf("\t\t\t\t\\                               /\n");
-	printf("\t\t\t\t \\_____O_____O_____O_____O_____/\n");
+	printf("\t\t\t\t~\\_____O_____O_____O_____O_____/~~~~~~~~~~\n");
 	printf("\t\t\t\t  \\___________________________/\n");
 	printf("\t\t\t\t   \\_________________________/\n\n\n");
 	system("pause");
@@ -72,6 +97,7 @@ int menuDeSeleccion(){
 			system("cls");
 			break;
 		case 3:
+			imprimirRecords();
 			system("pause");
 			system("cls");
 			break;
@@ -97,12 +123,27 @@ int menuDeSeleccion(){
 }//Fin de la función
 
 void interfazDeJuego(bool guardado){
-	char **tableroJugador1, **tableroJugador2, **tableroDeAtaqueJugador1, **tableroDeAtaqueJugador2, respuesta;
+	//Se inicializan las variables básicas 
+	EST_archivoDeGuardado registro, archivoGuardado;
+	char tableroJugador1[10][20], tableroJugador2[10][20], tableroDeAtaqueJugador1[10][20], tableroDeAtaqueJugador2[10][20], respuesta;
 	int contadorTurno;
+	double tiempoInicial, tiempoFinal, tiempoAcomulado, tiempoTotal;
 	bool inicializador1, inicializador2, atacado, final;
+	//inicializacion de las matrices de guardado, para evitar errores
+	inicializacionDeTableros(registro.tableroJugador1);
+	inicializacionDeTableros(registro.tableroJugador2);
+	inicializacionDeTableros(registro.tableroDeAtaqueJugador1);
+	inicializacionDeTableros(registro.tableroDeAtaqueJugador2);
+	//Se inicializa en 0 el archivo de guardado
+	inicializacionDeTableros(archivoGuardado.tableroJugador1);
+	inicializacionDeTableros(archivoGuardado.tableroJugador2);
+	inicializacionDeTableros(archivoGuardado.tableroDeAtaqueJugador1);
+	inicializacionDeTableros(archivoGuardado.tableroDeAtaqueJugador2);
 	final=false;//la partida se mantendrá activa a menos que el jugador gane el juego o indique lo contrario
 	EST_jugadores jugador[2];//Se crea una estructura de tipo EST_jugadores para guardar los datos de cada jugador
 	if(!guardado){//Si se inicia una partida sin datos guardados, se restablecen los valores iniciales
+		tiempoInicial=clock(); //Se toma la hora de comienzo del juego para su posterior contabilizacion
+		tiempoAcomulado=0; //iguala el tiempo contado a 0 por ser una nueva partida
 		contadorTurno=1;//Se establece el contador de turno en 1 para que el turno sea del jugador 1
 		inicializador1=false;//Se establecen los inicializadores de partida en false para que los jugadores acomoden sus barcos antes de empezar a jugar
 		inicializador2=false;
@@ -116,13 +157,36 @@ void interfazDeJuego(bool guardado){
 		}//Fin del for
 		jugador[0].puntaje=0;//Se inicializan los puntos de cada jugador en 0
 		jugador[1].puntaje=0;
-		tableroJugador1=inicializacionDeTableros(tableroJugador1);//Se inicializa el tablero para el jugador 1
-		tableroJugador2=inicializacionDeTableros(tableroJugador2);//Se inicializa el tablero para el jugador 2 
-		tableroDeAtaqueJugador1=inicializacionDeTableros(tableroDeAtaqueJugador1);//Se inicializa el tablero el jugador 1
-		tableroDeAtaqueJugador2=inicializacionDeTableros(tableroDeAtaqueJugador2);//Se inicializa el tablero para el jugador 2	
+		inicializacionDeTableros(tableroJugador1);//Se inicializa el tablero para el jugador 1
+		inicializacionDeTableros(tableroJugador2);//Se inicializa el tablero para el jugador 2 
+		inicializacionDeTableros(tableroDeAtaqueJugador1);//Se inicializa el tablero el jugador 1
+		inicializacionDeTableros(tableroDeAtaqueJugador2);//Se inicializa el tablero para el jugador 2	
 	}//Fin del if
 	else{//Si se inicia una partida con datos guardados, se establecen los valores previos
-		
+		tiempoInicial=clock(); //Se toma la hora de comienzo del juego para su posterior contabilizacion
+		//aqui no se iguala el tiempo acomulado a 0, ya que el tiempo acomulado se extrae del archivo de guardado
+		jugador[0].puntaje=0;//Se inicializan los puntos de cada jugador en 0
+		jugador[1].puntaje=0;
+		inicializacionDeTableros(tableroJugador1);//Se inicializa el tablero para el jugador 1
+		inicializacionDeTableros(tableroJugador2);//Se inicializa el tablero para el jugador 2 
+		inicializacionDeTableros(tableroDeAtaqueJugador1);//Se inicializa el tablero el jugador 1
+		inicializacionDeTableros(tableroDeAtaqueJugador2);//Se inicializa el tablero para el jugador 2		
+		archivoGuardado=cambiarGuardado(archivoGuardado);
+		jugador[0]=archivoGuardado.jugador[0];
+		jugador[1]=archivoGuardado.jugador[1];
+		for(int i=0;i<10;i++){
+			for(int j=0;j<20;j++){
+				tableroJugador1[i][j]=archivoGuardado.tableroJugador1[i][j];
+				tableroJugador2[i][j]=archivoGuardado.tableroJugador2[i][j];
+				tableroDeAtaqueJugador1[i][j]=archivoGuardado.tableroDeAtaqueJugador1[i][j];
+				tableroDeAtaqueJugador2[i][j]=archivoGuardado.tableroDeAtaqueJugador2[i][j];
+			}//Fin del for
+		}//Fin del for
+		inicializador1=archivoGuardado.inicializador1;
+		inicializador2=archivoGuardado.inicializador2;
+		atacado=archivoGuardado.atacado;
+		contadorTurno=archivoGuardado.contadorTurno;
+		tiempoAcomulado=archivoGuardado.tiempo;
 	}//Fin del else
 	do{
 		switch(contadorTurno){
@@ -137,7 +201,7 @@ void interfazDeJuego(bool guardado){
 					system("pause");
 					system("cls");				
 					printf("Disposici%cn de barcos jugador 1: \n", 162);
-					tableroJugador1=llenadoTablero(tableroJugador1);//Se modifica la disposición de los barcos dentro de la función
+					llenadoTablero(tableroJugador1);//Se modifica la disposición de los barcos dentro de la función
 					system("pause");
 					system("cls");
 					printf("Ahora deja el computador a tu contrincante\n");
@@ -149,26 +213,50 @@ void interfazDeJuego(bool guardado){
 				if(inicializador1 && inicializador2){//si los jugadores terminaron de acomodar sus barcos, pueden proceder a atacar
 					printf("Puntos jugador 1: %d\n\n", jugador[0].puntaje);
 					mostrarTablero(tableroDeAtaqueJugador1);
-					tableroDeAtaqueJugador1=ataqueAlEnemigo(tableroDeAtaqueJugador1, tableroJugador2, jugador, 1, &atacado);//Se despliega la funcion en que se introducen las coordenadas de ataque al enemigo
+					ataqueAlEnemigo(tableroDeAtaqueJugador1, tableroJugador2, jugador, 1, &atacado);//Se despliega la funcion en que se introducen las coordenadas de ataque al enemigo
 					system("pause");
 					system("cls");
 					mostrarTablero(tableroDeAtaqueJugador1);//Se despliega el tablero con los ataques efectuados
 					system("pause");
 					system("cls");
-					printf("%cDeseas guardar partida y salir? (S para salir y guardar, cualquier otro caracter para continuar)\n\n", 168);
-					fflush(stdin);
-					scanf("%c", &respuesta);
-					if(respuesta=='S'){
-						guardado=true;
-						final=true;
-						//meter aquí función para guardar los valores
-						break;
-					}
-					system("pause");
-					system("cls");
-					printf("\n\nAhora deja el computador a tu contrincante\n\n");
-					system("pause");
-					system("cls");
+					if(jugador[0].puntaje!=25){
+						printf("%cDeseas guardar partida y salir? (S para salir y guardar, cualquier otro caracter para continuar)\n\n", 168);
+						fflush(stdin);
+						scanf("%c", &respuesta);
+						if(respuesta=='S'){
+							
+							guardado=true;
+							final=true;
+							
+							
+							tiempoFinal=clock();//se detiene el conteo del tiempo
+							registro.tiempo+=contabilizarTiempo(tiempoInicial,tiempoFinal, tiempoAcomulado);
+							
+							//se guardan los datos de la partida en un struct para un manejo mas sencillo
+							registro.jugador[0]=jugador[0];
+							registro.jugador[1]=jugador[1];
+							for(int i=0;i<10;i++){
+							for(int j=0;j<20;j++){
+								registro.tableroJugador1[i][j]=tableroJugador1[i][j];
+								registro.tableroJugador2[i][j]=tableroJugador2[i][j];
+								registro.tableroDeAtaqueJugador1[i][j]=tableroDeAtaqueJugador1[i][j];
+								registro.tableroDeAtaqueJugador2[i][j]=tableroDeAtaqueJugador2[i][j];
+								}//Fin del for
+							}//Fin del for
+							registro.inicializador1=inicializador1;
+							registro.inicializador2=inicializador2;
+							registro.atacado=atacado;
+							registro.contadorTurno=2;
+							//se manda este struct a la funcion de guardado
+							lecturaGuardado(registro);
+							break;
+						}
+						system("pause");
+						system("cls");
+						printf("\n\nAhora deja el computador a tu contrincante\n\n");
+						system("pause");
+						system("cls");
+					}//Fin del if
 				}//Fin del if
 				contadorTurno++;//Si termina el turno del jugador1, se aumenta el contador para que siga el jugador 2
 				break;
@@ -180,7 +268,7 @@ void interfazDeJuego(bool guardado){
 					system("pause");
 					system("cls");
 					printf("Disposici%cn de barcos jugador 2: \n", 162);
-					tableroJugador2=llenadoTablero(tableroJugador2);
+					llenadoTablero(tableroJugador2);
 					system("pause");
 					system("cls");
 					printf("Ahora deja el computador a tu contrincante\n");
@@ -191,34 +279,76 @@ void interfazDeJuego(bool guardado){
 					printf("Puntos jugador 2: %d\n\n", jugador[1].puntaje);
 					printf("Selecciona la coordenada para atacar jugador 2:\n");
 					mostrarTablero(tableroDeAtaqueJugador2);
-					tableroDeAtaqueJugador2=ataqueAlEnemigo(tableroDeAtaqueJugador2, tableroJugador1, jugador, 2, &atacado);//Se despliega la funcion en que se introducen las coordenadas de ataque al enemigo
+					ataqueAlEnemigo(tableroDeAtaqueJugador2, tableroJugador1, jugador, 2, &atacado);//Se despliega la funcion en que se introducen las coordenadas de ataque al enemigo
 					system("pause");
 					system("cls");
 					mostrarTablero(tableroDeAtaqueJugador2);//Se despliega el tablero con los ataques efectuados
 					system("pause");
 					system("cls");
-					printf("%cDeseas guardar partida y salir? (S para salir y guardar, cualquier otro caracter para continuar)\n\n", 168);
-					fflush(stdin);
-					scanf("%c", &respuesta);
-					if(respuesta=='S'){
-						guardado=true;
-						final=true;
-						//meter aquí función para guardar los valores
-						break;
-					}
-					system("pause");
-					system("cls");
-					printf("Ahora deja el computador a tu contrincante\n\n");
-					system("pause");
-					system("cls");
+					if(jugador[1].puntaje!=25){
+						printf("%cDeseas guardar partida y salir? (S para salir y guardar, cualquier otro caracter para continuar)\n\n", 168);
+						fflush(stdin);
+						scanf("%c", &respuesta);
+						if(respuesta=='S'){
+							guardado=true;
+							final=true;
+							
+							tiempoFinal=clock();//se detiene el conteo del tiempo
+							registro.tiempo+=contabilizarTiempo(tiempoInicial,tiempoFinal, tiempoAcomulado);
+							
+							//se guardan los datos de la partida en un struct para un manejo mas sencillo
+							registro.jugador[0]=jugador[0];
+							registro.jugador[1]=jugador[1];
+							for(int i=0;i<10;i++){
+								for(int j=0;j<20;j++){
+									registro.tableroJugador1[i][j]=tableroJugador1[i][j];
+									registro.tableroJugador2[i][j]=tableroJugador2[i][j];
+									registro.tableroDeAtaqueJugador1[i][j]=tableroDeAtaqueJugador1[i][j];
+									registro.tableroDeAtaqueJugador2[i][j]=tableroDeAtaqueJugador2[i][j];
+								}//Fin del for
+							}//Fin del for
+							registro.inicializador1=inicializador1;
+							registro.inicializador2=inicializador2;
+							registro.atacado=atacado;
+							registro.contadorTurno=1;
+							//se manda este struct a la funcion de guardado
+							lecturaGuardado(registro);
+							
+							break;
+						}//Fin del if
+						system("pause");
+						system("cls");
+						printf("Ahora deja el computador a tu contrincante\n\n");
+						system("pause");
+						system("cls");
+					}//Fin del if
 				}//Fin del if
 				inicializador2=true;//Se activa hasta que ambos hayan terminado de acomodar su barco
 				contadorTurno--;//Si termina el turno del jugador1, se decrementa el contador para que siga el jugador 1
 				break;	
 		}//Fin del switch
 	}while(jugador[0].puntaje!=25 && jugador[1].puntaje!=25 && !final);//Fin del do while
+	if(jugador[0].puntaje==25){//Si cualquiera de los jugadores gana, se le felicita
+		printf("Felicidades Jugador 1, ha ganado\n");
+		
+		tiempoFinal=clock();//se detiene el conteo del tiempo
+		tiempoTotal=contabilizarTiempo(tiempoInicial,tiempoFinal, tiempoAcomulado);
+		registroRecords(jugador[0].nombre, jugador[0].puntaje, tiempoTotal);
+		registroRecords(jugador[1].nombre, jugador[1].puntaje, tiempoTotal);
+		ordenarRecords();
+	}//Fin del if
+	if(jugador[1].puntaje==25){
+		printf("Felicidades Jugador 2, ha ganado\n");
+		
+		tiempoFinal=clock();//se detiene el conteo del tiempo
+		tiempoTotal=contabilizarTiempo(tiempoInicial,tiempoFinal, tiempoAcomulado);
+		registroRecords(jugador[0].nombre, jugador[0].puntaje, tiempoTotal);
+		registroRecords(jugador[1].nombre, jugador[1].puntaje, tiempoTotal);
+		ordenarRecords();
+	}//Fin del if
 }//Fin de la función
-void mostrarTablero(char**tablero){
+
+void mostrarTablero(char tablero[10][20]){
 	printf("\n  ");
 	for(int i=97;i<117;i++){
 		printf("%c", i);
@@ -232,20 +362,15 @@ void mostrarTablero(char**tablero){
 		printf("\n");
 	}//fin del for
 }//Fin de la función
-char **inicializacionDeTableros(char **tableroJugador){
-	//Se inicializa el tableros
-	tableroJugador=(char**)malloc(10*sizeof(char**));
-	for(int i=0;i<10;i++){
-		*(tableroJugador+i)=(char*)malloc(20*sizeof(char*));
-	}//Fin del for
+void inicializacionDeTableros(char tableroJugador[10][20]){
 	for(int i=0;i<10;i++){//Se llenan los tableros con las textura base
 		for(int j=0;j<20;j++){
 			tableroJugador[i][j]=177;
 		}//Fin del for
 	}//fin del for
-	return tableroJugador;
 }//Fin de la función
-char **llenadoTablero(char**tablero){
+
+void llenadoTablero(char tablero[10][20]){
 	char coordenadaX;
 	int coordenadaY, disposicion;
 	bool validacion, validacionCoordenada;
@@ -727,9 +852,9 @@ char **llenadoTablero(char**tablero){
 		system("pause");
 		system("cls");
 	}//Fin del while				
-	return tablero;//se retorna el tablero con los nuevos valores
 }//Fin de la función
-char **ataqueAlEnemigo(char **tableroDeAtaque, char **tableroEnemigo, EST_jugadores *puntaje,int numeroDeJugador, bool *atacado){
+
+void ataqueAlEnemigo(char tableroDeAtaque[10][20], char tableroEnemigo[10][20], EST_jugadores *puntaje,int numeroDeJugador, bool *atacado){
 	char coordenadaX;
 	int coordenadaY;
 	bool validacionCoordenada, validacionAtaque;
@@ -786,9 +911,9 @@ char **ataqueAlEnemigo(char **tableroDeAtaque, char **tableroEnemigo, EST_jugado
 				}//Fin del if
 			}//Fin del for
 		}//Fin del for
-	}while(validacionAtaque);//Fin del do while
-	return tableroDeAtaque;//se retorna el tablero de ataque
+	}while(validacionAtaque && puntaje[0].puntaje!=25 && puntaje[1].puntaje!=25);//Fin del do while
 }
+
 void desplegarAyuda(){
 	fstream instructivo;//Se crea un archivo de la clase fsream
 	instructivo.open("Ayuda.txt", ios::in);
@@ -804,3 +929,137 @@ void desplegarAyuda(){
 	}//Fin del while
 	instructivo.close();
 }//Fin de la función
+
+void lecturaGuardado(EST_archivoDeGuardado registro){
+	fstream archivo; //se crea un archivo de la clase fsream
+	
+	remove("partidaGuardada.dat");
+	
+	archivo.open("partidaGuardada.dat",ios::binary|ios::app);//se abre el archivo en modo de sobreescritura
+	if(!archivo){//se verifica que el archivo exista
+		cout<<endl<<"Error de apertura"<<endl;
+		exit(0);
+	}
+	
+	archivo.seekg((0)*sizeof(EST_archivoDeGuardado),ios::beg);
+	archivo.write(reinterpret_cast<char*>(&registro), sizeof(EST_archivoDeGuardado));
+	
+	archivo.close();
+}//Fin de la función
+
+EST_archivoDeGuardado cambiarGuardado(EST_archivoDeGuardado registro){
+	EST_archivoDeGuardado archivoGuardado;
+	fstream archivo;
+	archivo.open("partidaGuardada.dat",ios::binary|ios::in);
+	if(!archivo){
+		cout<<endl<<"Error de apertura"<<endl;
+		exit(0);
+	}//Fin del if
+	
+	/*while(!archivo.eof() && archivo.read(reinterpret_cast<char*>(&archivoGuardado), sizeof(EST_archivoDeGuardado))){
+		registro=archivoGuardado;
+	}//Fin del while*/
+	
+	archivo.seekp((0)*sizeof(EST_archivoDeGuardado),ios::beg);
+	archivo.read(reinterpret_cast<char*>(&registro), sizeof(EST_archivoDeGuardado));
+	archivo.close();
+	
+	return registro;
+}//Fin de la función
+
+void imprimirRecords(){
+	ordenarRecords();
+	
+	fstream archivo; 
+	archivo.open("records.txt",ios::in);
+	if ( !archivo ) { // verifica la existencia del archivo
+		cout << " No se pudo abrir el arcivo, puede que no haya records guardados " << endl;
+		exit(0); // termina el programa
+	}//Fin del if
+	char nombre[80];
+	int puntuacion;
+	double tiempo;
+	archivo.clear(); // restablece el eof para la sig entrada
+	archivo.seekg( 0 ); // se mueve al inicio del archivo
+	archivo >> nombre >> puntuacion >> tiempo;
+	while( !archivo.eof() ) // iterar hasta fin de archivo
+	{
+		cout << "nombre :" << nombre << "	puntuacion :" << puntuacion << "	tiempo :" << tiempo <<endl;
+		// mandamos el flujo de extraccion del archivo a las variables
+		archivo >> nombre >> puntuacion >> tiempo;
+	}//Fin del while
+	archivo.close(); // cierra el archivo
+}//Fin de la función
+
+void registroRecords(char nombre[80], int record, int tiempo){
+	fstream archivo;
+	archivo.open("records.txt", ios::out|ios::app);
+	if (!archivo){
+		cerr << " No se pudo abrir el archivo " << endl ;
+		exit(0);
+	}//Fin del if
+    archivo << nombre << " " << record << " " << tiempo << endl;
+	archivo.close(); // cierra el archivo
+}//Fin de la función
+
+void ordenarRecords(){
+	EST_records jugador[10], auxiliar;
+	int contador=0;
+	fstream archivo; // crea un objeto de tipo file-stream
+	// abrimos el archivo en modo de lectura
+	archivo.open("records.txt",ios::in);
+	if ( !archivo ) { // verifica la existencia del archivo
+		cerr << " No se pudo abrir el arcivo " << endl;
+		exit(0);
+	}//Fin del if
+	
+	
+	while( !archivo.eof() ) // iterar hasta fin de archivo
+	{
+		archivo >> jugador[contador].nombre >> jugador[contador].puntuacion >> jugador[contador].tiempoSegundos;
+		contador++;
+	}//Fin del while
+	contador--;
+	archivo.close();
+	
+	for (int i=0; i<contador;i++) {
+        for (int j=0; j<contador-1; j++) {
+            if (jugador[j].puntuacion < jugador[i+1].puntuacion) {
+            	auxiliar.puntuacion=jugador[j].puntuacion;
+            	auxiliar.tiempoSegundos=jugador[j].tiempoSegundos;
+            	strcpy(auxiliar.nombre,jugador[j].nombre);
+                
+                jugador[j].puntuacion=jugador[j+1].puntuacion;
+                jugador[j].tiempoSegundos=jugador[j+1].tiempoSegundos;
+                strcpy(jugador[j].nombre,jugador[j+1].nombre);
+                
+                jugador[j+1].puntuacion=auxiliar.puntuacion;
+                jugador[j+1].tiempoSegundos=auxiliar.tiempoSegundos;
+                strcpy(jugador[j+1].nombre,auxiliar.nombre);
+            }//Fin del if
+        }//Fin del for
+    }//Fin del for
+    
+    remove("records.txt");
+    
+    archivo.open("records.txt", ios::out|ios::app);
+	if (!archivo){
+		cerr << " No se pudo abrir el archivo " << endl ;
+		exit(0);
+	}//Fin del if
+	
+	for(int i=0; i<contador; i++){
+		archivo << jugador[i].nombre << " " << jugador[i].puntuacion << " " << jugador[i].tiempoSegundos << endl;
+	}//Fin del for
+    archivo.close();
+}//Fin de la función
+
+double contabilizarTiempo(double tiempoInicial,double tiempoFinal,double tiempoAcomulado){
+	double tiempoTotal;
+	
+	tiempoTotal=(double(tiempoFinal-tiempoInicial)/CLOCKS_PER_SEC);
+	tiempoTotal+=tiempoAcomulado;
+	
+	return(tiempoTotal);
+}//Fin del for
+
